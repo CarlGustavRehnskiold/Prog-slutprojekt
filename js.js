@@ -9,6 +9,15 @@ let lastKeyPressedPlayer2 = null;
 const explosionImg = new Image();
 explosionImg.src = 'Explotion transparent gif.gif';
 
+let gameOver = false;
+
+let explosionImgWidth = 0;
+let explosionImgHeight = 0;
+explosionImg.onload = function() {
+    explosionImgWidth = explosionImg.width;
+    explosionImgHeight = explosionImg.height;
+};
+
 class Player {
     constructor() {
         this.x = CANVASWIDTH - 100;
@@ -36,7 +45,8 @@ class Player {
             this.x = CANVASWIDTH - this.radius;
         } else if (this.x - this.radius < 0) {
             this.x = this.radius;
-        } else if (this.y + this.radius > CANVASHEIGHT) {
+        }
+        if (this.y + this.radius > CANVASHEIGHT) {
             this.y = CANVASHEIGHT - this.radius;
         } else if (this.y - this.radius < 0) {
             this.y = this.radius;
@@ -63,8 +73,6 @@ function collisionplayer2(player, player2) {
             proj.y + proj.radius >= player2.y - player2.radius &&
             proj.y - proj.radius <= player2.y + player2.radius
         ) {
-            // console.log("Player1 Hit!");
-            
             player2.health -= 10;    
             player.projectiles.splice(i, 1);
             var player2health = document.getElementById("healthplayer2");
@@ -76,6 +84,7 @@ function collisionplayer2(player, player2) {
 }
 
 function collisionplayer(player, player2) {
+    var playerhealth = document.getElementById("healthplayer1");
     for (let i = 0; i < player2.projectiles.length; i++) {
         let proj = player2.projectiles[i];
         if (
@@ -84,21 +93,18 @@ function collisionplayer(player, player2) {
             proj.y + proj.radius >= player.y - player.radius &&
             proj.y - proj.radius <= player.y + player.radius
         ) {
-            // console.log("Player2 Hit!");
             player2.projectiles.splice(i, 1);
             player.health -= 10;
-            var playerhealth = document.getElementById("healthplayer1");
             playerhealth.textContent = player.health;
             return true;
         }
     }
     return false;
 }
-let player = new Player();
-let player2 = new Player();
-player2.x = 50
 
 window.addEventListener("keydown", function(event) {
+    if (gameOver) return; 
+
     //CONTROLS FOR PLAYER1
     if (event.key === "ArrowRight") {
         player.dx = player.moveSpeed;
@@ -121,25 +127,18 @@ window.addEventListener("keydown", function(event) {
     // Projectile player 1
     if (event.key === ".") {
         player.attacking = true;
-        var dx, dy;
-        if (lastKeyPressedPlayer1 == "ArrowRight"){
+        var dx = 0, dy = 0;
+        if (lastKeyPressedPlayer1 === "ArrowRight"){
             dx = 6;
-            dy = 0;
-        }
-        else if(lastKeyPressedPlayer1 == "ArrowLeft"){
+        } else if(lastKeyPressedPlayer1 === "ArrowLeft"){
             dx = -6;
-            dy = 0;
-        }
-        else if(lastKeyPressedPlayer1 == "ArrowUp"){
-            dx = 0;
+        } else if(lastKeyPressedPlayer1 === "ArrowUp"){
             dy = -6;
-        }
-        else if(lastKeyPressedPlayer1 == "ArrowDown"){
-            dx = 0;
+        } else if(lastKeyPressedPlayer1 === "ArrowDown"){
             dy = 6;
         }
-        let NewProjectile = new Projectile(player.x,player.y,5,dx,dy)
-        player.projectiles.push(NewProjectile)
+        let newProjectile = new Projectile(player.x, player.y, 5, dx, dy);
+        player.projectiles.push(newProjectile);
     }
 
     //CONTROLS FOR PLAYER2
@@ -164,21 +163,14 @@ window.addEventListener("keydown", function(event) {
     // Projectile player 2
     if (event.key === " ") {
         player2.attacking = true;
-        var dx, dy;
-        if (lastKeyPressedPlayer2 == "d"){
+        var dx = 0, dy = 0;
+        if (lastKeyPressedPlayer2 === "d"){
             dx = 6;
-            dy = 0;
-        }
-        else if(lastKeyPressedPlayer2 == "a"){
+        } else if(lastKeyPressedPlayer2 === "a"){
             dx = -6;
-            dy = 0;
-        }
-        else if(lastKeyPressedPlayer2 == "w"){
-            dx = 0;
+        } else if(lastKeyPressedPlayer2 === "w"){
             dy = -6;
-        }
-        else if(lastKeyPressedPlayer2 == "s"){
-            dx = 0;
+        } else if(lastKeyPressedPlayer2 === "s"){
             dy = 6;
         }
         
@@ -188,22 +180,27 @@ window.addEventListener("keydown", function(event) {
 });
 
 function animate() {
+    if (gameOver) {
+        return;
+    }
+
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);
 
+    collisionplayer2(player, player2);
+    collisionplayer(player, player2);
+    const winner = document.getElementById("winner");
 
-    collisionplayer2(player,player2) 
-    collisionplayer(player,player2) 
-        // Check player 1 health
     if (player.health <= 0) {
-    ctx.drawImage(explosionImg, player.x - player.radius, player.y - player.radius);
+        winner.textContent = "PLAYER 2 WINS";
+        ctx.drawImage(explosionImg, player.x - explosionImgWidth / 2, player.y - explosionImgHeight / 2 - 50);
+        gameOver = true;
     }
-    console.log(player2.x)
 
-    // Check player 2 health
     if (player2.health <= 0) {
-        ctx.drawImage(explosionImg, player2.x - player2.radius, player2.y - player2.radius);
-        // console.log(player2)
+        winner.textContent = "PLAYER 1 WINS";
+        ctx.drawImage(explosionImg, player2.x - explosionImgWidth / 2, player2.y - explosionImgHeight / 2 - 50);
+        gameOver = true;
     }
     
     if (player2.attacking) {
@@ -235,5 +232,9 @@ function animate() {
     player2.updatePosition();
     player2.draw();
 }
+
+let player = new Player();
+let player2 = new Player();
+player2.x = 50;
 
 animate();

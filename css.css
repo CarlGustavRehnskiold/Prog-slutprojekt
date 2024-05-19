@@ -40,3 +40,8 @@ header {
   height: 100px;
 }
 
+#winner{
+  background-color: black;
+  color: red;
+  justify-self: center;
+}
