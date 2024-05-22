@@ -190,16 +190,18 @@ function animate() {
     collisionplayer2(player, player2);
     collisionplayer(player, player2);
     const winner = document.getElementById("winner");
-
+    var audio = new Audio('femur-pipe-falling-the-absurd.mp3');
     if (player.health <= 0) {
         winner.textContent = "PLAYER 2 WINS";
         ctx.drawImage(explosionImg, player.x - explosionImgWidth / 2, player.y - explosionImgHeight / 2 - 50);
+        audio.play();
         gameOver = true;
     }
 
     if (player2.health <= 0) {
         winner.textContent = "PLAYER 1 WINS";
         ctx.drawImage(explosionImg, player2.x - explosionImgWidth / 2, player2.y - explosionImgHeight / 2 - 50);
+        audio.play();
         gameOver = true;
     }
     
@@ -237,4 +239,12 @@ let player = new Player();
 let player2 = new Player();
 player2.x = 50;
 
+function showSettings() {
+    document.getElementById('menu').classList.add('hidden');
+    document.getElementById('settings').classList.remove('hidden');
+}
+function goBack() {
+    document.getElementById('menu').classList.remove('hidden');
+    document.getElementById('settings').classList.add('hidden');
+}
 animate();

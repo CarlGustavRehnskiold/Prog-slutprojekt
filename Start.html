@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <title>Ball Breakers</title>
+</head>
+<body>
+    <div class="hero-image"></div>
+    <div class="title">
+      <h1>Ball Breakers</h1>
+    </div>
+    <div id="menu">
+      <button class="button" onclick="showSettings()">Settings</button>
+      <a href="game.html" class="button">Start Game</a>
+    </div>
+    <div id="settings" class="hidden">
+      <h1>Settings</h1>
+      <button class="button" onclick="goBack()">Back to Menu</button>
+      <div>
+        <label for="volume">Volume:</label>
+        <input type="range" id="volume" name="volume" min="0" max="100">
+      </div>
+      <div>
+        <label for="backgroundcolor">Backgrund Color:</label>
+        <select id="backgroundcolor" name="Backgrund Color">
+          <option value="blue">Blue</option>
+          <option value="yellow">Yellow</option>
+          <option value="black">Black</option>
+        </select>
+      </div>
+    </div>
+    <script src="js.js"></script>
+</body>
+</html>
