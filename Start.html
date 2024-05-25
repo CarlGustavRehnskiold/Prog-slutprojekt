@@ -1,36 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css.css" />
     <title>Ball Breakers</title>
-</head>
-<body>
-    <div class="hero-image"></div>
-    <div class="title">
-      <h1>Ball Breakers</h1>
-    </div>
+  </head>
+  <body>
     <div id="menu">
+      <div class="hero-image"></div>
+      <div class="title">
+        <h1>Ball Breakers</h1>
+    </div>
       <button class="button" onclick="showSettings()">Settings</button>
-      <a href="game.html" class="button">Start Game</a>
+      <button class="button" onclick="showGame()">Play Game</button>
     </div>
     <div id="settings" class="hidden">
       <h1>Settings</h1>
-      <button class="button" onclick="goBack()">Back to Menu</button>
+      <button class="button" onclick="goBackSettings()">Back to Menu</button>
       <div>
         <label for="volume">Volume:</label>
-        <input type="range" id="volume" name="volume" min="0" max="100">
+        <input type="range" id="volume" name="volume" min="0" max="100" />
       </div>
       <div>
-        <label for="backgroundcolor">Backgrund Color:</label>
-        <select id="backgroundcolor" name="Backgrund Color">
+        <label for="backgroundcolor">Background Color:</label>
+        <select id="backgroundcolor" name="Background Color">
           <option value="blue">Blue</option>
           <option value="yellow">Yellow</option>
           <option value="black">Black</option>
         </select>
       </div>
     </div>
+    <main id="main" class="hidden">
+      <button class="button" onclick="goBackGame()">Back to Menu</button>
+      <header>
+        <h2>HEALTH PLAYER 1</h2>
+        <h2 id="healthplayer1">100</h2>
+        <h1 class="title">Ball Breakers</h1>
+        <h2>HEALTH PLAYER 2</h2>
+        <h2 id="healthplayer2">100</h2>
+      </header>
+      <canvas id="gameCanvas" width="800" height="400"></canvas>
+      <h2 id="winner"></h2>
+    </main>
     <script src="js.js"></script>
-</body>
+  </body>
 </html>

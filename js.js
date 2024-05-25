@@ -13,7 +13,7 @@ let gameOver = false;
 
 let explosionImgWidth = 0;
 let explosionImgHeight = 0;
-explosionImg.onload = function() {
+explosionImg.onload = function () {
     explosionImgWidth = explosionImg.width;
     explosionImgHeight = explosionImg.height;
 };
@@ -73,11 +73,11 @@ function collisionplayer2(player, player2) {
             proj.y + proj.radius >= player2.y - player2.radius &&
             proj.y - proj.radius <= player2.y + player2.radius
         ) {
-            player2.health -= 10;    
+            player2.health -= 10;
             player.projectiles.splice(i, 1);
             var player2health = document.getElementById("healthplayer2");
             player2health.textContent = player2.health;
-            return true;       
+            return true;
         }
     }
     return false;
@@ -102,8 +102,8 @@ function collisionplayer(player, player2) {
     return false;
 }
 
-window.addEventListener("keydown", function(event) {
-    if (gameOver) return; 
+window.addEventListener("keydown", function (event) {
+    if (gameOver) return;
 
     //CONTROLS FOR PLAYER1
     if (event.key === "ArrowRight") {
@@ -128,13 +128,13 @@ window.addEventListener("keydown", function(event) {
     if (event.key === ".") {
         player.attacking = true;
         var dx = 0, dy = 0;
-        if (lastKeyPressedPlayer1 === "ArrowRight"){
+        if (lastKeyPressedPlayer1 === "ArrowRight") {
             dx = 6;
-        } else if(lastKeyPressedPlayer1 === "ArrowLeft"){
+        } else if (lastKeyPressedPlayer1 === "ArrowLeft") {
             dx = -6;
-        } else if(lastKeyPressedPlayer1 === "ArrowUp"){
+        } else if (lastKeyPressedPlayer1 === "ArrowUp") {
             dy = -6;
-        } else if(lastKeyPressedPlayer1 === "ArrowDown"){
+        } else if (lastKeyPressedPlayer1 === "ArrowDown") {
             dy = 6;
         }
         let newProjectile = new Projectile(player.x, player.y, 5, dx, dy);
@@ -164,16 +164,16 @@ window.addEventListener("keydown", function(event) {
     if (event.key === " ") {
         player2.attacking = true;
         var dx = 0, dy = 0;
-        if (lastKeyPressedPlayer2 === "d"){
+        if (lastKeyPressedPlayer2 === "d") {
             dx = 6;
-        } else if(lastKeyPressedPlayer2 === "a"){
+        } else if (lastKeyPressedPlayer2 === "a") {
             dx = -6;
-        } else if(lastKeyPressedPlayer2 === "w"){
+        } else if (lastKeyPressedPlayer2 === "w") {
             dy = -6;
-        } else if(lastKeyPressedPlayer2 === "s"){
+        } else if (lastKeyPressedPlayer2 === "s") {
             dy = 6;
         }
-        
+
         let newProjectile = new Projectile(player2.x, player2.y, 5, dx, dy);
         player2.projectiles.push(newProjectile);
     }
@@ -204,26 +204,26 @@ function animate() {
         audio.play();
         gameOver = true;
     }
-    
+
     if (player2.attacking) {
         player2.projectiles.forEach((proj) => {
             ctx.beginPath();
             ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2, false);
             ctx.stroke();
             ctx.fill();
-    
+
             proj.x += proj.dx;
             proj.y += proj.dy;
         });
     }
-    
+
     if (player.attacking) {
         player.projectiles.forEach((proj) => {
             ctx.beginPath();
             ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2, false);
             ctx.stroke();
             ctx.fill();
-    
+
             proj.x += proj.dx;
             proj.y += proj.dy;
         });
@@ -239,12 +239,31 @@ let player = new Player();
 let player2 = new Player();
 player2.x = 50;
 
+animate();
+
+// Menu and settings - html
 function showSettings() {
     document.getElementById('menu').classList.add('hidden');
     document.getElementById('settings').classList.remove('hidden');
 }
-function goBack() {
+
+function goBackSettings() {
     document.getElementById('menu').classList.remove('hidden');
     document.getElementById('settings').classList.add('hidden');
 }
-animate();
+
+function goBackGame() {
+    document.getElementById('menu').classList.remove('hidden');
+    document.getElementById('main').classList.add('hidden');
+}
+ 
+function showGame() {
+    document.getElementById('menu').classList.add('hidden');
+    document.getElementById('main').classList.remove('hidden');
+}   
+
+document.addEventListener("DOMContentLoaded", function () {
+    let backgroundColor = document.getElementById("backgroundcolor");
+    console.log(backgroundColor);
+});
+
