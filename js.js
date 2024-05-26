@@ -19,27 +19,31 @@ explosionImg.onload = function () {
 
 class Player {
     constructor() {
-        this.x = CANVASWIDTH;
-        this.y = CANVASHEIGHT;
+        this.x = CANVASWIDTH - 10;
+        this.y = CANVASHEIGHT / 2;
         this.radius = 10;
-        this.moveSpeed = 4;
+        this.moveSpeed = 2;
         this.dx = 0;
         this.dy = 0;
         this.health = 100;
         this.attacking = false;
         this.projectiles = [];
+        this.damage = 10;
+        this.color = "green";
     }
 
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.stroke();
+        ctx.fillStyle = this.color; 
         ctx.fill();
+        ctx.stroke();
     }
 
     updatePosition() {
-        this.x += this.dx;
-        this.y += this.dy;
+        this.x += this.dx * this.moveSpeed;
+        this.y += this.dy * this.moveSpeed;
+
         if (this.x + this.radius > CANVASWIDTH) {
             this.x = CANVASWIDTH - this.radius;
         } else if (this.x - this.radius < 0) {
@@ -54,13 +58,15 @@ class Player {
 }
 
 class Projectile {
-    constructor(x, y, radius, dx, dy) {
+    constructor(x, y, radius, dx, dy, color) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.dx = dx;
         this.dy = dy;
+        this.color = color; 
     }
+
 
     update() {
         this.x += this.dx;
@@ -79,6 +85,8 @@ class Projectile {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.strokeStyle = this.color; 
+        ctx.fillStyle = this.color; 
         ctx.stroke();
         ctx.fill();
     }
@@ -93,7 +101,7 @@ function collisionplayer2(player, player2) {
             proj.y + proj.radius >= player2.y - player2.radius &&
             proj.y - proj.radius <= player2.y + player2.radius
         ) {
-            player2.health -= 10;
+            player2.health -= player.damage;
             player.projectiles.splice(i, 1);
             var player2health = document.getElementById("healthplayer2");
             player2health.textContent = player2.health;
@@ -114,7 +122,7 @@ function collisionplayer(player, player2) {
             proj.y - proj.radius <= player.y + player.radius
         ) {
             player2.projectiles.splice(i, 1);
-            player.health -= 10;
+            player.health -= player.damage;
             playerhealth.textContent = player.health;
             return true;
         }
@@ -125,7 +133,7 @@ function collisionplayer(player, player2) {
 window.addEventListener("keydown", function (event) {
     if (gameOver) return;
 
-    //CONTROLS FOR PLAYER1
+    // CONTROLS FOR PLAYER1
     if (event.key === "ArrowRight") {
         player.dx = player.moveSpeed;
         player.dy = 0;
@@ -157,11 +165,11 @@ window.addEventListener("keydown", function (event) {
         } else if (lastKeyPressedPlayer1 === "ArrowDown") {
             dy = 6;
         }
-        let newProjectile = new Projectile(player.x, player.y, 5, dx, dy);
+        let newProjectile = new Projectile(player.x, player.y, 5, dx, dy, player.color); 
         player.projectiles.push(newProjectile);
     }
 
-    //CONTROLS FOR PLAYER2
+    // CONTROLS FOR PLAYER2
     if (event.key === "d") {
         player2.dx = player2.moveSpeed;
         player2.dy = 0;
@@ -194,7 +202,7 @@ window.addEventListener("keydown", function (event) {
             dy = 6;
         }
 
-        let newProjectile = new Projectile(player2.x, player2.y, 5, dx, dy);
+        let newProjectile = new Projectile(player2.x, player2.y, 5, dx, dy, player2.color);
         player2.projectiles.push(newProjectile);
     }
 });
@@ -208,17 +216,18 @@ function animate() {
 
     collisionplayer2(player, player2);
     collisionplayer(player, player2);
+
     const winner = document.getElementById("winner");
     var audio = new Audio('femur-pipe-falling-the-absurd.mp3');
     if (player.health <= 0) {
-        winner.textContent = "PLAYER 2 WINS";
+        winner.textContent = "PLAYER 1 WINS";
         ctx.drawImage(explosionImg, player.x - explosionImgWidth / 2, player.y - explosionImgHeight / 2 - 50);
         audio.play();
         gameOver = true;
     }
 
     if (player2.health <= 0) {
-        winner.textContent = "PLAYER 1 WINS";
+        winner.textContent = "PLAYER 2 WINS";
         ctx.drawImage(explosionImg, player2.x - explosionImgWidth / 2, player2.y - explosionImgHeight / 2 - 50);
         audio.play();
         gameOver = true;
@@ -231,7 +240,6 @@ function animate() {
                 proj.draw();
                 return true;
             }
-            console.log("Out of bounce")
             return false;
         });
     }
@@ -255,11 +263,10 @@ function animate() {
 
 let player = new Player();
 let player2 = new Player();
-player2.x = 0;
-player2.y = 0;
+player2.x = 10;
+player2.color = "yellow";
 
 animate();
-
 
 // Menu and settings - html
 function showSettings() {
@@ -276,14 +283,35 @@ function goBackGame() {
     document.getElementById('menu').classList.remove('hidden');
     document.getElementById('main').classList.add('hidden');
 }
- 
+
 function showGame() {
     document.getElementById('menu').classList.add('hidden');
     document.getElementById('main').classList.remove('hidden');
-}   
+}
 
 document.addEventListener("DOMContentLoaded", function () {
-    let backgroundColor = document.getElementById("backgroundcolor");
-    console.log(backgroundColor);
+    let backgroundColorSelect = document.getElementById("backgroundcolor");
+    function changeBackgroundColor() {
+        let selectedColor = backgroundColorSelect.value;
+        document.body.style.backgroundColor = selectedColor;
+    }
+    backgroundColorSelect.addEventListener("change", changeBackgroundColor);
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    let damageForm = document.getElementById("damageForm");
+    function updatePlayerDamage(event) {
+        player.damage = parseInt(event.target.value);
+        player2.damage = parseInt(event.target.value);
+    }
+    damageForm.addEventListener("change", updatePlayerDamage);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let speedForm = document.getElementById("speedForm");
+    function updatePlayerSpeed(event) {
+        player.moveSpeed = parseInt(event.target.value);
+        player2.moveSpeed = parseInt(event.target.value);
+    }
+    speedForm.addEventListener("change", updatePlayerSpeed);
+});
