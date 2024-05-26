@@ -7,8 +7,7 @@ let lastKeyPressedPlayer1 = null;
 let lastKeyPressedPlayer2 = null;
 
 const explosionImg = new Image();
-explosionImg.src = 'Explotion transparent gif.gif';
-
+explosionImg.src = '../Pictures/Explotion transparent gif.gif';
 let gameOver = false;
 
 let explosionImgWidth = 0;
@@ -20,8 +19,8 @@ explosionImg.onload = function () {
 
 class Player {
     constructor() {
-        this.x = CANVASWIDTH - 100;
-        this.y = CANVASHEIGHT / 2;
+        this.x = CANVASWIDTH;
+        this.y = CANVASHEIGHT;
         this.radius = 10;
         this.moveSpeed = 4;
         this.dx = 0;
@@ -61,6 +60,27 @@ class Projectile {
         this.radius = radius;
         this.dx = dx;
         this.dy = dy;
+    }
+
+    update() {
+        this.x += this.dx;
+        this.y += this.dy;
+    }
+
+    isOutOfBounds() {
+        return (
+            this.x + this.radius < 0 ||
+            this.x - this.radius > CANVASWIDTH ||
+            this.y + this.radius < 0 ||
+            this.y - this.radius > CANVASHEIGHT
+        );
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.stroke();
+        ctx.fill();
     }
 }
 
@@ -183,7 +203,6 @@ function animate() {
     if (gameOver) {
         return;
     }
-
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);
 
@@ -206,26 +225,25 @@ function animate() {
     }
 
     if (player2.attacking) {
-        player2.projectiles.forEach((proj) => {
-            ctx.beginPath();
-            ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2, false);
-            ctx.stroke();
-            ctx.fill();
-
-            proj.x += proj.dx;
-            proj.y += proj.dy;
+        player2.projectiles = player2.projectiles.filter((proj) => {
+            proj.update();
+            if (!proj.isOutOfBounds()) {
+                proj.draw();
+                return true;
+            }
+            console.log("Out of bounce")
+            return false;
         });
     }
 
     if (player.attacking) {
-        player.projectiles.forEach((proj) => {
-            ctx.beginPath();
-            ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2, false);
-            ctx.stroke();
-            ctx.fill();
-
-            proj.x += proj.dx;
-            proj.y += proj.dy;
+        player.projectiles = player.projectiles.filter((proj) => {
+            proj.update();
+            if (!proj.isOutOfBounds()) {
+                proj.draw();
+                return true;
+            }
+            return false;
         });
     }
 
@@ -237,9 +255,11 @@ function animate() {
 
 let player = new Player();
 let player2 = new Player();
-player2.x = 50;
+player2.x = 0;
+player2.y = 0;
 
 animate();
+
 
 // Menu and settings - html
 function showSettings() {
