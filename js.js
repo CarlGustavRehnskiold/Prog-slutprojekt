@@ -1,22 +1,25 @@
+// Constants
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const CANVASWIDTH = 800;
 const CANVASHEIGHT = 400;
 
+// Variables
 let lastKeyPressedPlayer1 = null;
 let lastKeyPressedPlayer2 = null;
-
-const explosionImg = new Image();
-explosionImg.src = '../Pictures/Explotion transparent gif.gif';
 let gameOver = false;
-
 let explosionImgWidth = 0;
 let explosionImgHeight = 0;
+
+// Image
+const explosionImg = new Image();
+explosionImg.src = '../Pictures/Explotion transparent gif.gif';
 explosionImg.onload = function () {
     explosionImgWidth = explosionImg.width;
     explosionImgHeight = explosionImg.height;
 };
 
+// Player Class
 class Player {
     constructor() {
         this.x = CANVASWIDTH - 10;
@@ -57,6 +60,7 @@ class Player {
     }
 }
 
+// Projectile Class
 class Projectile {
     constructor(x, y, radius, dx, dy, color) {
         this.x = x;
@@ -66,7 +70,6 @@ class Projectile {
         this.dy = dy;
         this.color = color; 
     }
-
 
     update() {
         this.x += this.dx;
@@ -92,6 +95,7 @@ class Projectile {
     }
 }
 
+// Player 1 collision detection
 function collisionplayer2(player, player2) {
     for (let i = 0; i < player.projectiles.length; i++) {
         let proj = player.projectiles[i];
@@ -111,6 +115,7 @@ function collisionplayer2(player, player2) {
     return false;
 }
 
+// Player 2 collision detection
 function collisionplayer(player, player2) {
     var playerhealth = document.getElementById("healthplayer1");
     for (let i = 0; i < player2.projectiles.length; i++) {
@@ -130,10 +135,10 @@ function collisionplayer(player, player2) {
     return false;
 }
 
+// Event listener for player movement and attacks
 window.addEventListener("keydown", function (event) {
     if (gameOver) return;
 
-    // CONTROLS FOR PLAYER1
     if (event.key === "ArrowRight") {
         player.dx = player.moveSpeed;
         player.dy = 0;
@@ -150,10 +155,7 @@ window.addEventListener("keydown", function (event) {
         player.dy = -player.moveSpeed;
         player.dx = 0;
         lastKeyPressedPlayer1 = "ArrowUp";
-    }
-
-    // Projectile player 1
-    if (event.key === ".") {
+    } else if (event.key === ".") {
         player.attacking = true;
         var dx = 0, dy = 0;
         if (lastKeyPressedPlayer1 === "ArrowRight") {
@@ -167,10 +169,7 @@ window.addEventListener("keydown", function (event) {
         }
         let newProjectile = new Projectile(player.x, player.y, 5, dx, dy, player.color); 
         player.projectiles.push(newProjectile);
-    }
-
-    // CONTROLS FOR PLAYER2
-    if (event.key === "d") {
+    } else if (event.key === "d") {
         player2.dx = player2.moveSpeed;
         player2.dy = 0;
         lastKeyPressedPlayer2 = "d";
@@ -186,10 +185,7 @@ window.addEventListener("keydown", function (event) {
         player2.dy = -player2.moveSpeed;
         player2.dx = 0;
         lastKeyPressedPlayer2 = "w";
-    }
-
-    // Projectile player 2
-    if (event.key === " ") {
+    } else if (event.key === " ") {
         player2.attacking = true;
         var dx = 0, dy = 0;
         if (lastKeyPressedPlayer2 === "d") {
@@ -201,12 +197,12 @@ window.addEventListener("keydown", function (event) {
         } else if (lastKeyPressedPlayer2 === "s") {
             dy = 6;
         }
-
         let newProjectile = new Projectile(player2.x, player2.y, 5, dx, dy, player2.color);
         player2.projectiles.push(newProjectile);
     }
 });
 
+// Animation loop
 function animate() {
     if (gameOver) {
         return;
@@ -214,9 +210,11 @@ function animate() {
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, CANVASWIDTH, CANVASHEIGHT);
 
+    // Collision detection
     collisionplayer2(player, player2);
     collisionplayer(player, player2);
 
+    // Winner determination and game over handling
     const winner = document.getElementById("winner");
     var audio = new Audio('femur-pipe-falling-the-absurd.mp3');
     if (player.health <= 0) {
@@ -233,6 +231,7 @@ function animate() {
         gameOver = true;
     }
 
+    // Projectile update and draw
     if (player2.attacking) {
         player2.projectiles = player2.projectiles.filter((proj) => {
             proj.update();
@@ -255,20 +254,23 @@ function animate() {
         });
     }
 
+    // Player update and draw
     player.updatePosition();
     player.draw();
     player2.updatePosition();
     player2.draw();
 }
 
+// Player initialization
 let player = new Player();
 let player2 = new Player();
 player2.x = 10;
 player2.color = "yellow";
 
+// Start animation loop
 animate();
 
-// Menu and settings - html
+// Menu and settings - HTML
 function showSettings() {
     document.getElementById('menu').classList.add('hidden');
     document.getElementById('settings').classList.remove('hidden');
@@ -289,6 +291,7 @@ function showGame() {
     document.getElementById('main').classList.remove('hidden');
 }
 
+// Event listeners for settings changes
 document.addEventListener("DOMContentLoaded", function () {
     let backgroundColorSelect = document.getElementById("backgroundcolor");
     function changeBackgroundColor() {
